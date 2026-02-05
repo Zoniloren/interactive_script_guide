@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<!-- saved from url=(0088)file:///Users/oscaralbertolorenzoninarvaez/Downloads/interactive_script_guide%20(6).html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Injection Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            min-height: 600px;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #f8fafc;
+            color: #6366f1;
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc, white);
+            border-radius: 12px;
+            border-left: 5px solid #6366f1;
+        }
+
+        .platform-icon {
+            width: 50px;
+            height: 50px;
+            background: #6366f1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .method-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .method-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.15);
+            transform: translateY(-2px);
+        }
+
+        .method-title {
+            font-size: 1.3rem;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #10b981;
+            color: white;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .method-badge.advanced {
+            background: #f59e0b;
+        }
+
+        .step {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .step::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #6366f1;
+            font-size: 12px;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .code-block {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'CODE';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #6366f1;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 5px solid;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .alert strong {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .visual-path {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .path-item {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #6366f1;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #6366f1;
+        }
+
+        .path-arrow {
+            color: #6366f1;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .pro-tip {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 5px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .pro-tip::before {
+            content: '💡 PRO TIP';
+            display: block;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .star-rating {
+            color: #fbbf24;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Script Injection Master Guide</h1>
+            <p class="subtitle">Interactive Visual Reference for 12 Platforms + Google Tag Manager</p>
+        </header>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab(&#39;overview&#39;)">📋 Overview</button>
+                <button class="tab" onclick="switchTab(&#39;gtm&#39;)">🏷️ Tag Manager</button>
+                <button class="tab" onclick="switchTab(&#39;wordpress&#39;)">⚡ WordPress</button>
+                <button class="tab" onclick="switchTab(&#39;segment&#39;)">📊 Segment</button>
+                <button class="tab" onclick="switchTab(&#39;shopify&#39;)">🛍️ Shopify</button>
+                <button class="tab" onclick="switchTab(&#39;wix&#39;)">🎨 Wix</button>
+                <button class="tab" onclick="switchTab(&#39;squarespace&#39;)">⬛ Squarespace</button>
+                <button class="tab" onclick="switchTab(&#39;webflow&#39;)">🌊 Webflow</button>
+                <button class="tab" onclick="switchTab(&#39;hubspot&#39;)">🧡 HubSpot</button>
+                <button class="tab" onclick="switchTab(&#39;weebly&#39;)">🔷 Weebly</button>
+                <button class="tab" onclick="switchTab(&#39;godaddy&#39;)">🌐 GoDaddy</button>
+                <button class="tab" onclick="switchTab(&#39;duda&#39;)">🏢 Duda</button>
+                <button class="tab" onclick="switchTab(&#39;custom&#39;)">💻 Custom</button>
+            </div>
+
+            <!-- OVERVIEW -->
+            <div class="tab-content active" id="overview">
+                <div class="platform-header">
+                    <div class="platform-icon">📊</div>
+                    <div>
+                        <h2>Platform Comparison &amp; Quick Reference</h2>
+                        <p>Compare 12 platforms + Google Tag Manager - Choose the best for your needs</p>
+                    </div>
+                </div>
+
+                <div style="background: #fef3c7; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #f59e0b;">
+                    <strong style="display: block; margin-bottom: 10px; color: #92400e;">💡 New! Complete Google Tag Manager Guide</strong>
+                    <p style="margin: 0; color: #92400e;">Check out the dedicated GTM tab for a complete step-by-step guide on setting up and managing all your tracking tags from one powerful dashboard!</p>
+                </div>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Ease of Use</th>
+                            <th>Flexibility</th>
+                            <th>Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>WordPress</strong></td>
+                            <td><span class="star-rating">★★★★☆</span></td>
+                            <td>High</td>
+                            <td>Blogs, Business Sites</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Segment</strong></td>
+                            <td><span class="star-rating">★★★☆☆</span></td>
+                            <td>Very High</td>
+                            <td>Analytics Hub</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Shopify</strong></td>
+                            <td><span class="star-rating">★★★★☆</span></td>
+                            <td>Medium</td>
+                            <td>E-commerce</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Wix</strong></td>
+                            <td><span class="star-rating">★★★★★</span></td>
+                            <td>Medium</td>
+                            <td>Beginners</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Squarespace</strong></td>
+                            <td><span class="star-rating">★★★★★</span></td>
+                            <td>Medium</td>
+                            <td>Creative Portfolio</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Webflow</strong></td>
+                            <td><span class="star-rating">★★★★☆</span></td>
+                            <td>High</td>
+                            <td>Designers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>HubSpot CMS</strong></td>
+                            <td><span class="star-rating">★★★☆☆</span></td>
+                            <td>High</td>
+                            <td>Marketing Teams</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Weebly</strong></td>
+                            <td><span class="star-rating">★★★★☆</span></td>
+                            <td>Medium</td>
+                            <td>Small Business</td>
+                        </tr>
+                        <tr>
+                            <td><strong>GoDaddy</strong></td>
+                            <td><span class="star-rating">★★☆☆☆</span></td>
+                            <td>Low</td>
+                            <td>Basic Sites (Limited)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Duda</strong></td>
+                            <td><span class="star-rating">★★★★☆</span></td>
+                            <td>High</td>
+                            <td>Agencies</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom Code</strong></td>
+                            <td><span class="star-rating">★★☆☆☆</span></td>
+                            <td>Full Control</td>
+                            <td>Developers</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pro-tip">
+                    Always test scripts in staging before production. Use F12 DevTools to verify loading.
+                </div>
+            </div>
+
+            <!-- GOOGLE TAG MANAGER -->
+            <div class="tab-content" id="gtm">
+                <div class="platform-header">
+                    <div class="platform-icon">🏷️</div>
+                    <div>
+                        <h2>Google Tag Manager (GTM) - Complete Guide</h2>
+                        <p>The ultimate tool for managing all your tracking scripts from one place</p>
+                    </div>
+                </div>
+
+                <div style="background: #dbeafe; padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #3b82f6;">
+                    <h3 style="margin-bottom: 10px; color: #1e40af;">🎯 What is Google Tag Manager?</h3>
+                    <p style="margin: 0; color: #1e40af;">GTM is a free tag management system that lets you add, update, and manage marketing tags (tracking codes) on your website WITHOUT editing code. Install GTM once, manage all tags from a web interface forever.</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: #d1fae5; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981;">
+                        <strong style="color: #065f46; display: block; margin-bottom: 8px;">✅ Benefits</strong>
+                        <ul style="margin: 0; padding-left: 20px; color: #065f46;">
+                            <li>No code changes needed</li>
+                            <li>Manage all tags in one place</li>
+                            <li>Built-in templates for popular tools</li>
+                            <li>Version control &amp; rollback</li>
+                            <li>Preview mode for testing</li>
+                        </ul>
+                    </div>
+                    <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                        <strong style="color: #92400e; display: block; margin-bottom: 8px;">🎯 Use Cases</strong>
+                        <ul style="margin: 0; padding-left: 20px; color: #92400e;">
+                            <li>Google Analytics tracking</li>
+                            <li>Facebook Pixel events</li>
+                            <li>LinkedIn Insight Tag</li>
+                            <li>Apollo.io visitor tracking</li>
+                            <li>Custom JavaScript execution</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Step 1: Create GTM Account &amp; Container</div>
+                    <span class="method-badge">SETUP</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">tagmanager.google.com</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Create Account</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Setup Container</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Get Container Code</span>
+                    </div>
+
+                    <h4>Detailed Steps:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Go to tagmanager.google.com and sign in with Google account
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Click "Create Account" (or use existing)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Fill in Account Name (your company name)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Container Name: Your website name
+                    </div>
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        Target Platform: Select "Web"
+                    </div>
+                    <div class="step">
+                        <span class="step-number">6</span>
+                        Click "Create" and accept Terms of Service
+                    </div>
+                    <div class="step">
+                        <span class="step-number">7</span>
+                        Copy BOTH code snippets provided (head &amp; body)
+                    </div>
+
+                    <div class="code-block">
+<pre>&lt;!-- Google Tag Manager (HEAD) --&gt;
+&lt;script&gt;(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&amp;l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');&lt;/script&gt;
+&lt;!-- End Google Tag Manager --&gt;
+
+&lt;!-- Google Tag Manager (BODY - noscript) --&gt;
+&lt;noscript&gt;&lt;iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"&gt;&lt;/iframe&gt;&lt;/noscript&gt;
+&lt;!-- End Google Tag Manager (noscript) --&gt;</pre>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Critical:</strong> You need BOTH snippets. First one goes in &lt;head&gt;, second one right after opening &lt;body&gt; tag.
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Step 2: Install GTM on Your Website</div>
+                    <span class="method-badge">INSTALLATION</span>
+                    
+                    <h4>Installation by Platform:</h4>
+                    
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                        <strong style="display: block; margin-bottom: 10px; color: #1e293b;">WordPress:</strong>
+                        <div class="step">Use "Insert Headers and Footers" plugin OR theme header.php/footer.php</div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                        <strong style="display: block; margin-bottom: 10px; color: #1e293b;">Shopify:</strong>
+                        <div class="step">theme.liquid file - paste head code before &lt;/head&gt;, body code after &lt;body&gt;</div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                        <strong style="display: block; margin-bottom: 10px; color: #1e293b;">Wix:</strong>
+                        <div class="step">Settings → Custom Code → Add both snippets</div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                        <strong style="display: block; margin-bottom: 10px; color: #1e293b;">Squarespace:</strong>
+                        <div class="step">Settings → Advanced → Code Injection → Header &amp; Footer</div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                        <strong style="display: block; margin-bottom: 10px; color: #1e293b;">Webflow:</strong>
+                        <div class="step">Project Settings → Custom Code → Head &amp; Body</div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                        <strong style="display: block; margin-bottom: 10px; color: #1e293b;">Custom HTML/React/Next.js:</strong>
+                        <div class="step">Directly in HTML or using _document.js (Next.js)</div>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Step 3: Create Your First Tag</div>
+                    <span class="method-badge">CONFIGURATION</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">GTM Dashboard</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">New Tag</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Choose Type</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Configure</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Add Trigger</span>
+                    </div>
+
+                    <h4>Creating a Custom HTML Tag (Example: Apollo.io):</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        In GTM Dashboard, click "Tags" in left sidebar
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Click "New" button
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Name your tag: "Apollo Visitor Tracking"
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Click "Tag Configuration" area
+                    </div>
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        Select "Custom HTML" from tag types
+                    </div>
+                    <div class="step">
+                        <span class="step-number">6</span>
+                        Paste your Apollo (or any) tracking script
+                    </div>
+                    <div class="step">
+                        <span class="step-number">7</span>
+                        Click "Triggering" area below
+                    </div>
+                    <div class="step">
+                        <span class="step-number">8</span>
+                        Select "All Pages" trigger (or create custom trigger)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">9</span>
+                        Click "Save"
+                    </div>
+
+                    <div class="code-block">
+<pre>&lt;!-- Example Custom HTML Tag --&gt;
+&lt;script&gt;
+  // Your Apollo.io tracking code
+  (function() {
+    // Tracking script here
+    console.log('Apollo tracking loaded via GTM');
+  })();
+&lt;/script&gt;</pre>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Step 4: Understanding Triggers</div>
+                    <span class="method-badge">IMPORTANT</span>
+                    
+                    <h4>Common Trigger Types:</h4>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong style="color: #6366f1;">🎯 All Pages</strong>
+                        <p style="margin: 5px 0 0 0; color: #64748b;">Fires on every page load. Use for global tracking (Analytics, Pixels)</p>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong style="color: #6366f1;">🎯 Page View</strong>
+                        <p style="margin: 5px 0 0 0; color: #64748b;">Similar to All Pages, triggers when DOM is ready</p>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong style="color: #6366f1;">🎯 Click - All Elements</strong>
+                        <p style="margin: 5px 0 0 0; color: #64748b;">Fires when user clicks anywhere. Use for button tracking</p>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong style="color: #6366f1;">🎯 Form Submission</strong>
+                        <p style="margin: 5px 0 0 0; color: #64748b;">Fires when forms are submitted. Great for lead tracking</p>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <strong style="color: #6366f1;">🎯 Custom Event</strong>
+                        <p style="margin: 5px 0 0 0; color: #64748b;">Advanced: Trigger based on custom JavaScript events</p>
+                    </div>
+
+                    <div class="pro-tip">
+                        <strong>Creating a Custom Trigger Example:</strong><br>
+                        1. Click "Triggers" → "New"<br>
+                        2. Choose "Page View"<br>
+                        3. Select "Some Page Views"<br>
+                        4. Set condition: Page URL contains "/pricing"<br>
+                        5. Now tag only fires on pricing page!
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Step 5: Preview &amp; Publish</div>
+                    <span class="method-badge">TESTING</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Preview Mode</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Test on Website</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Verify Tags Fire</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Submit &amp; Publish</span>
+                    </div>
+
+                    <h4>Preview Mode Steps:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        In GTM Dashboard, click "Preview" button (top right)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Enter your website URL in the popup
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Click "Connect" - Your site opens with GTM debug panel
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Navigate through your site - Debug panel shows which tags fire
+                    </div>
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        Verify your tags appear in "Tags Fired" section
+                    </div>
+                    <div class="step">
+                        <span class="step-number">6</span>
+                        If working correctly, go back to GTM and click "Submit"
+                    </div>
+
+                    <h4 style="margin-top: 25px;">Publishing:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Click "Submit" (top right in GTM)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Add Version Name: "Added Apollo tracking"
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Add Description (optional but recommended)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Click "Publish" - Changes go live immediately
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Always Preview First!</strong> Never publish without testing. Preview mode lets you catch errors before they affect real users.
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Popular Tag Templates</div>
+                    <span class="method-badge">QUICK SETUP</span>
+                    
+                    <h4>GTM has built-in templates for:</h4>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">📊</div>
+                            <strong>Google Analytics 4</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #64748b;">GA4 Configuration &amp; Events</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">📘</div>
+                            <strong>Facebook Pixel</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #64748b;">Base code &amp; events</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">🔍</div>
+                            <strong>Google Ads</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #64748b;">Conversion tracking</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">💼</div>
+                            <strong>LinkedIn Insight</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #64748b;">Partner tracking</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">🔥</div>
+                            <strong>Hotjar</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #64748b;">Heatmaps &amp; recordings</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">💻</div>
+                            <strong>Custom HTML</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #64748b;">Any custom script</p>
+                        </div>
+                    </div>
+
+                    <div class="pro-tip">
+                        <strong>Pro Tip:</strong> Search "Community Template Gallery" in GTM for pre-made templates for tools like Apollo.io, Clearbit, Intercom, and hundreds more!
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">GTM Best Practices</div>
+                    <span class="method-badge">EXPERT TIPS</span>
+                    
+                    <h4>✅ Do's:</h4>
+                    <div class="step">Use descriptive names for tags, triggers, and variables</div>
+                    <div class="step">Always test in Preview mode before publishing</div>
+                    <div class="step">Add version descriptions when publishing</div>
+                    <div class="step">Use folders to organize tags (100+ tags get messy)</div>
+                    <div class="step">Enable Tag Assistant for easier debugging</div>
+                    <div class="step">Set up error tracking with custom JavaScript variables</div>
+                    
+                    <h4 style="margin-top: 25px;">❌ Don'ts:</h4>
+                    <div class="step">Don't publish without testing</div>
+                    <div class="step">Don't use too many tags (slows site down)</div>
+                    <div class="step">Don't duplicate tracking (check if tag already exists)</div>
+                    <div class="step">Don't forget to set proper triggers (or tags fire everywhere)</div>
+                    <div class="step">Don't leave old tags active (archive unused ones)</div>
+                </div>
+
+                <div class="pro-tip">
+                    <strong>🚀 Advanced Tips:</strong><br>
+                    • Use Data Layer for dynamic values<br>
+                    • Set up Google Analytics 4 Enhanced Ecommerce via GTM<br>
+                    • Create reusable variables for repeated values<br>
+                    • Use Tag Sequencing for dependent tags<br>
+                    • Export container for backup before major changes<br>
+                    • Use Workspaces for team collaboration
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Common Mistakes to Avoid:</strong><br>
+                    1. Installing GTM twice (check if it's already installed!)<br>
+                    2. Not testing mobile responsiveness<br>
+                    3. Forgetting to remove old hardcoded tracking scripts<br>
+                    4. Not documenting changes in version notes<br>
+                    5. Using "All Elements" trigger when specific click is better
+                </div>
+            </div>
+
+            <!-- WORDPRESS -->
+            <div class="tab-content" id="wordpress">
+                <div class="platform-header">
+                    <div class="platform-icon">⚡</div>
+                    <div>
+                        <h2>WordPress Script Injection</h2>
+                        <p>Multiple methods for maximum flexibility</p>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Method 1: Header/Footer Plugin</div>
+                    <span class="method-badge">EASIEST</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Dashboard</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Plugins</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Add New</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Search "Insert Headers"</span>
+                    </div>
+
+                    <h4>Step-by-Step:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Install "Insert Headers and Footers" or "WPCode"
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Go to: Settings → Insert Headers and Footers
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Paste code in Header, Body, or Footer section
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Save and test in incognito mode
+                    </div>
+
+                    <div class="code-block">
+<pre>&lt;!-- Google Analytics Example --&gt;
+&lt;script async src="https://www.googletagmanager.com/gtag/js?id=GA_ID"&gt;&lt;/script&gt;
+&lt;script&gt;
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'GA_MEASUREMENT_ID');
+&lt;/script&gt;</pre>
+                    </div>
+                </div>
+
+                <div class="pro-tip">
+                    Use plugins for portability - your code survives theme changes!
+                </div>
+            </div>
+
+            <!-- SEGMENT -->
+            <div class="tab-content" id="segment">
+                <div class="platform-header">
+                    <div class="platform-icon">📊</div>
+                    <div>
+                        <h2>Segment Analytics Platform</h2>
+                        <p>Central hub for all your analytics and tracking tools</p>
+                    </div>
+                </div>
+
+                <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #3b82f6;">
+                    <strong>ℹ️ What is Segment?</strong> Segment is a customer data platform that collects, cleans, and routes your analytics data to other tools. Install Segment once, manage all tracking from one dashboard.
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Initial Segment Installation</div>
+                    <span class="method-badge">REQUIRED FIRST</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">segment.com</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Sources</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Copy Write Key</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Install Snippet</span>
+                    </div>
+
+                    <h4>Step-by-Step:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Log into Segment dashboard at segment.com
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Navigate to: Connections → Sources
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Select your website source or create new one
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Copy the JavaScript snippet with your Write Key
+                    </div>
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        Paste snippet in your website's &lt;head&gt; section
+                    </div>
+
+                    <div class="code-block">
+<pre>&lt;!-- Segment Analytics Snippet --&gt;
+&lt;script&gt;
+  !function(){
+    var analytics = window.analytics = window.analytics || [];
+    // ... Segment initialization code
+    analytics.load("YOUR_WRITE_KEY");
+    analytics.page();
+  }();
+&lt;/script&gt;</pre>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Adding Destinations (Tools)</div>
+                    <span class="method-badge">AFTER SEGMENT IS INSTALLED</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Segment Dashboard</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Destinations</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Add Destination</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Configure</span>
+                    </div>
+
+                    <h4>Popular Destinations:</h4>
+                    <div class="step">
+                        Google Analytics - Web analytics
+                    </div>
+                    <div class="step">
+                        Facebook Pixel - Ad tracking
+                    </div>
+                    <div class="step">
+                        Mixpanel - Product analytics
+                    </div>
+                    <div class="step">
+                        Intercom - Customer messaging
+                    </div>
+                    <div class="step">
+                        Amplitude - User analytics
+                    </div>
+                </div>
+
+                <div class="pro-tip">
+                    <strong>Why use Segment?</strong><br>
+                    ✅ Install tracking code once, not 10+ times<br>
+                    ✅ Add/remove tools from dashboard (no code changes)<br>
+                    ✅ Clean, consistent data across all platforms<br>
+                    ✅ Easy A/B testing of different analytics tools
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Note:</strong>
+                    Segment has a free tier for up to 1,000 monthly tracked users. Paid plans start at $120/month for more volume.
+                </div>
+            </div>
+
+            <!-- SHOPIFY -->
+            <div class="tab-content" id="shopify">
+                <div class="platform-header">
+                    <div class="platform-icon">🛍️</div>
+                    <div>
+                        <h2>Shopify Script Injection</h2>
+                        <p>E-commerce focused implementation</p>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Theme Customization</div>
+                    <span class="method-badge">RECOMMENDED</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Online Store</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Themes</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Actions</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Edit Code</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">theme.liquid</span>
+                    </div>
+
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Navigate to Online Store → Themes
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Click Actions → Edit code
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Find theme.liquid in Layout folder
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Insert code before closing head or body tag
+                    </div>
+
+                    <div class="pro-tip">
+                        Use Liquid conditionals to control where scripts load. Example: only on product pages.
+                    </div>
+                </div>
+            </div>
+
+            <!-- WIX -->
+            <div class="tab-content" id="wix">
+                <div class="platform-header">
+                    <div class="platform-icon">🎨</div>
+                    <div>
+                        <h2>Wix Script Injection</h2>
+                        <p>Drag-and-drop with code power</p>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Custom Code Panel</div>
+                    <span class="method-badge">EASIEST</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Settings ⚙️</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Custom Code</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Add Custom Code</span>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Important!</strong>
+                        Custom code only works on published sites, not in preview mode.
+                    </div>
+                </div>
+            </div>
+
+            <!-- SQUARESPACE -->
+            <div class="tab-content" id="squarespace">
+                <div class="platform-header">
+                    <div class="platform-icon">⬛</div>
+                    <div>
+                        <h2>Squarespace Code Injection</h2>
+                        <p>Clean and simple</p>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Code Injection</div>
+                    <span class="method-badge">SIMPLE</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Settings</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Advanced</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Code Injection</span>
+                    </div>
+
+                    <p>Choose Header for critical scripts, Footer for performance.</p>
+                </div>
+            </div>
+
+            <!-- WEBFLOW -->
+            <div class="tab-content" id="webflow">
+                <div class="platform-header">
+                    <div class="platform-icon">🌊</div>
+                    <div>
+                        <h2>Webflow Custom Code</h2>
+                        <p>Designer-friendly power</p>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Project Settings</div>
+                    <span class="method-badge">POWERFUL</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Settings (Press D)</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Custom Code Tab</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Head / Footer Code</span>
+                    </div>
+
+                    <div class="pro-tip">
+                        Webflow has native integrations for GA and Facebook Pixel. Use those first!
+                    </div>
+                </div>
+            </div>
+
+            <!-- HUBSPOT -->
+            <div class="tab-content" id="hubspot">
+                <div class="platform-header">
+                    <div class="platform-icon">🧡</div>
+                    <div>
+                        <h2>HubSpot CMS</h2>
+                        <p>Marketing automation</p>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Site Header HTML</div>
+                    <span class="method-badge">GLOBAL</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Settings</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Website</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Pages</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Site Header HTML</span>
+                    </div>
+
+                    <p>HubSpot automatically includes jQuery - no need to load it separately!</p>
+                </div>
+            </div>
+
+            <!-- WEEBLY -->
+            <div class="tab-content" id="weebly">
+                <div class="platform-header">
+                    <div class="platform-icon">🔷</div>
+                    <div>
+                        <h2>Weebly Script Injection</h2>
+                        <p>Small business website builder - Easy implementation</p>
+                    </div>
+                </div>
+
+                <div style="background: #d1fae5; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #10b981;">
+                    <strong>✅ Can Edit:</strong> Yes | <strong>📊 Difficulty:</strong> Easy | <strong>🏷️ GTM:</strong> Optional
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Method 1: Header Code</div>
+                    <span class="method-badge">EASIEST</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Settings</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">SEO</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Header Code</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Paste Script</span>
+                    </div>
+
+                    <h4>Step-by-Step:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Go to Settings → SEO (Search Engine Optimization)
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Find 'Header Code' section
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Paste Apollo script or tracking code
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Click 'Save' and publish your site
+                    </div>
+
+                    <div class="code-block">
+<pre>&lt;!-- Example: Apollo Tracking --&gt;
+&lt;script&gt;
+  // Your Apollo script here
+  // This loads on all pages
+&lt;/script&gt;</pre>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Method 2: Google Tag Manager</div>
+                    <span class="method-badge">ADVANCED</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Add GTM to Header Code</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Create Custom HTML Tag</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Add Apollo Script</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Trigger: All Pages</span>
+                    </div>
+
+                    <h4>Implementation Steps:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Use Header Code to add GTM container script
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        In GTM dashboard: Create Custom HTML tag
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Add your Apollo/tracking script to the tag
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Set trigger to 'All Pages'
+                    </div>
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        Publish GTM container and verify
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Important Notes:</strong>
+                    Simple implementation through SEO settings. Header code loads on all pages automatically.
+                </div>
+
+                <div class="pro-tip">
+                    Weebly's SEO settings make it super easy to add tracking codes. No need to edit theme files!
+                </div>
+            </div>
+
+            <!-- GODADDY -->
+            <div class="tab-content" id="godaddy">
+                <div class="platform-header">
+                    <div class="platform-icon">🌐</div>
+                    <div>
+                        <h2>GoDaddy Website Builder</h2>
+                        <p>Limited code access - GTM recommended</p>
+                    </div>
+                </div>
+
+                <div style="background: #fee2e2; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ef4444;">
+                    <strong>⚠️ Can Edit:</strong> Limited | <strong>📊 Difficulty:</strong> Hard | <strong>🏷️ GTM:</strong> Strongly Recommended
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>🚨 Major Limitation:</strong>
+                    GoDaddy Website Builder has very limited code access on basic plans. GTM is the recommended approach.
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Method 1: Settings (If Available)</div>
+                    <span class="method-badge advanced">LIMITED</span>
+                    
+                    <h4>Check Your Plan:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Go to Settings in GoDaddy builder
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Look for custom code or advanced options
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Note: Many plans don't allow direct code editing
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Plan Restrictions:</strong>
+                        Basic and standard plans often don't have code editing capabilities. You may need to upgrade.
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Method 2: Google Tag Manager</div>
+                    <span class="method-badge">RECOMMENDED</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Contact GoDaddy Support</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Request GTM Installation</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Configure in GTM</span>
+                    </div>
+
+                    <h4>Implementation Steps:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Contact GoDaddy support to add GTM container
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        OR upgrade to a plan with code editing capabilities
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Once GTM is added: Create Custom HTML tag
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Add Apollo script with All Pages trigger
+                    </div>
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        Publish GTM container and test
+                    </div>
+                </div>
+
+                <div class="pro-tip">
+                    Consider migrating to GoDaddy WordPress Hosting for full code control. It's more flexible and powerful.
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Important Notes:</strong>
+                    Very limited code access on basic plans. May require support assistance or plan upgrade. GTM is your best bet.
+                </div>
+            </div>
+
+            <!-- DUDA -->
+            <div class="tab-content" id="duda">
+                <div class="platform-header">
+                    <div class="platform-icon">🏢</div>
+                    <div>
+                        <h2>Duda Website Builder</h2>
+                        <p>Professional platform with excellent code injection</p>
+                    </div>
+                </div>
+
+                <div style="background: #d1fae5; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #10b981;">
+                    <strong>✅ Can Edit:</strong> Yes | <strong>📊 Difficulty:</strong> Easy | <strong>🏷️ GTM:</strong> Optional
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Method 1: Site-Wide Custom Code</div>
+                    <span class="method-badge">RECOMMENDED</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Site Settings</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Custom Code</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Add to Head</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Save</span>
+                    </div>
+
+                    <h4>Step-by-Step:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Go to Site Settings from the editor
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Click 'Custom Code' or 'Tracking &amp; Analytics'
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Add Apollo script to 'Head' section
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Save changes and publish site
+                    </div>
+
+                    <div class="code-block">
+<pre>&lt;!-- Duda Custom Code Example --&gt;
+&lt;script&gt;
+  // Your Apollo tracking script
+  // Loads globally across all pages
+&lt;/script&gt;</pre>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Method 2: Google Tag Manager</div>
+                    <span class="method-badge">ADVANCED</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Add GTM in Custom Code</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Configure GTM Tags</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Publish Container</span>
+                    </div>
+
+                    <h4>Implementation Steps:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Add GTM code in Site Settings → Custom Code
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        In GTM: Create Custom HTML tag
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Paste Apollo script in the tag
+                    </div>
+                    <div class="step">
+                        <span class="step-number">4</span>
+                        Set trigger to 'All Pages'
+                    </div>
+                    <div class="step">
+                        <span class="step-number">5</span>
+                        Publish GTM container
+                    </div>
+                </div>
+
+                <div class="pro-tip">
+                    Duda is a professional platform with excellent code injection options. Great for agencies managing multiple sites!
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Important Notes:</strong>
+                    Professional platform with good code injection options. Supports device-specific targeting and conditional display.
+                </div>
+            </div>
+
+            <!-- CUSTOM -->
+            <div class="tab-content" id="custom">
+                <div class="platform-header">
+                    <div class="platform-icon">💻</div>
+                    <div>
+                        <h2>Custom HTML / React / Next.js</h2>
+                        <p>Full developer control - Direct implementation</p>
+                    </div>
+                </div>
+
+                <div style="background: #d1fae5; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #10b981;">
+                    <strong>✅ Can Edit:</strong> Yes (Full Control) | <strong>📊 Difficulty:</strong> Easy (for developers) | <strong>🏷️ GTM:</strong> Optional
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">HTML Sites - Direct Implementation</div>
+                    <span class="method-badge">BASIC</span>
+                    
+                    <div class="visual-path">
+                        <span class="path-item">Open index.html</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Paste Before &lt;/head&gt;</span>
+                        <span class="path-arrow">→</span>
+                        <span class="path-item">Deploy</span>
+                    </div>
+
+                    <h4>Implementation Steps:</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Open your index.html or main template file
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Paste Apollo script before closing &lt;/head&gt; tag
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Save changes and deploy to your server
+                    </div>
+
+                    <div class="code-block">
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Your Site&lt;/title&gt;
+  
+  &lt;!-- Apollo Script --&gt;
+  &lt;script&gt;
+    // Your Apollo tracking code here
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Your content --&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">React Applications</div>
+                    <span class="method-badge advanced">ADVANCED</span>
+                    
+                    <h4>Option 1: public/index.html (Create React App)</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Navigate to public/index.html in your React project
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Add script to the &lt;head&gt; section
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Deploy your application
+                    </div>
+
+                    <div class="code-block">
+<pre>&lt;!-- public/index.html --&gt;
+&lt;head&gt;
+  &lt;script&gt;
+    // Apollo tracking script
+  &lt;/script&gt;
+&lt;/head&gt;</pre>
+                    </div>
+
+                    <h4 style="margin-top: 25px;">Option 2: React Helmet (Dynamic)</h4>
+                    <div class="code-block">
+<pre>import { Helmet } from 'react-helmet';
+
+function App() {
+  return (
+    &lt;&gt;
+      &lt;Helmet&gt;
+        &lt;script&gt;{`
+          // Your Apollo script here
+        `}&lt;/script&gt;
+      &lt;/Helmet&gt;
+      
+      &lt;div&gt;Your App Content&lt;/div&gt;
+    &lt;/&gt;
+  );
+}</pre>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">Next.js Applications</div>
+                    <span class="method-badge advanced">ADVANCED</span>
+                    
+                    <h4>Option 1: _document.js (Recommended)</h4>
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        Create or open pages/_document.js
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        Add script in the Head component
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        Deploy changes
+                    </div>
+
+                    <div class="code-block">
+<pre>import { Html, Head, Main, NextScript } from 'next/document';
+
+export default function Document() {
+  return (
+    &lt;Html&gt;
+      &lt;Head&gt;
+        &lt;script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Your Apollo script here
+            `
+          }}
+        /&gt;
+      &lt;/Head&gt;
+      &lt;body&gt;
+        &lt;Main /&gt;
+        &lt;NextScript /&gt;
+      &lt;/body&gt;
+    &lt;/Html&gt;
+  );
+}</pre>
+                    </div>
+
+                    <h4 style="margin-top: 25px;">Option 2: next/head Component</h4>
+                    <div class="code-block">
+<pre>import Head from 'next/head';
+
+export default function Home() {
+  return (
+    &lt;&gt;
+      &lt;Head&gt;
+        &lt;script
+          dangerouslySetInnerHTML={{
+            __html: apolloScript
+          }}
+        /&gt;
+      &lt;/Head&gt;
+      
+      &lt;main&gt;Your content&lt;/main&gt;
+    &lt;/&gt;
+  );
+}</pre>
+                    </div>
+                </div>
+
+                <div class="pro-tip">
+                    For production apps: Store Apollo script in environment variables. Use .env files and process.env to keep sensitive data secure.
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Important Notes:</strong>
+                    Full control means full responsibility. Implement according to your tech stack best practices. Test thoroughly before deploying to production.
+                </div>
+
+                <div class="pro-tip">
+                    <strong>Best Practices:</strong><br>
+                    • Use async or defer attributes for non-critical scripts<br>
+                    • Test in development environment first<br>
+                    • Monitor console for errors after deployment<br>
+                    • Consider using GTM for easier management across environments
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🚀 Script Injection Master Guide | January 2026</p>
+            <p>Created with ❤️ by your AI assistant</p>
+        </footer>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            console.log('Switching to tab:', tabId);
+            
+            var allContents = document.querySelectorAll('.tab-content');
+            var allTabs = document.querySelectorAll('.tab');
+            
+            for (var i = 0; i < allContents.length; i++) {
+                allContents[i].classList.remove('active');
+            }
+            
+            for (var i = 0; i < allTabs.length; i++) {
+                allTabs[i].classList.remove('active');
+            }
+            
+            var targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+            
+            var clickedButton = event.currentTarget;
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+            
+            window.scrollTo(0, 0);
+        }
+        
+        console.log('Guide loaded successfully!');
+    </script>
+
+</body></html>
